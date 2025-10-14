@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Portfólio</title></head>
+<body>
+  <h1>Meus Projetos</h1>
+  <ul>
+    {% for p in projects %}
+      <li><a href="{{ p.repo_url }}">{{ p.title }}</a></li>
+    {% empty %}
+      <li>Nenhum projeto ainda.</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
