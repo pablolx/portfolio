@@ -1,14 +1,26 @@
 <!DOCTYPE html>
-<html>
-<head><title>Portfólio</title></head>
+{% load static %}
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Portfólio de Projetos</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
 <body>
-  <h1>Meus Projetos</h1>
-  <ul>
-    {% for p in projects %}
-      <li><a href="{{ p.repo_url }}">{{ p.title }}</a></li>
-    {% empty %}
-      <li>Nenhum projeto ainda.</li>
-    {% endfor %}
-  </ul>
+  <header>
+    <h3>Portfólio de Projetos de </h3>
+    <h1>Pablo C. Pinheiro</h1>
+  </header>
+  <main>
+    <ul>
+        <li><b>Projetos:</b></li>
+        <li>.</li>
+      {% for p in projects %}
+        <li>Repositório GitHub: <a href="{{ p.repo_url }}" target="_blank">{{ p.title }}</a></li>
+      {% empty %}
+        <li class="empty">Nenhum projeto ainda.</li>
+      {% endfor %}
+    </ul>
+  </main>
 </body>
 </html>

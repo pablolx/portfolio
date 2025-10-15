@@ -1,8 +1,1 @@
-﻿Django==4.2.8
-djangorestframework==3.15.0
-psycopg2-binary==2.9.7
-gunicorn==20.1.0
-python-dotenv==1.0.0
-whitenoise==6.5.0
-Pillow==10.1.0
-django-environ==0.11.0
+﻿믯䒿慪杮㵯㐽㈮㠮਍橤湡潧敲瑳牦浡睥牯㵫㌽ㄮ⸵ര瀊祳潣杰ⴲ楢慮祲㴽⸲⸹ഷ朊湵捩牯㵮㈽⸰⸱ര瀊瑹潨⵮潤整癮㴽⸱⸰ര眊楨整潮獩㵥㘽㔮〮਍楐汬睯㴽〱ㄮ〮਍橤湡潧攭癮物湯㴽⸰ㄱ〮਍
