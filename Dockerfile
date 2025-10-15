@@ -12,4 +12,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY portfolio_project .
 
 # Comando para rodar a aplicação usando Gunicorn (servidor de produção)
-CMD ["gunicorn", "portfolio.wsgi:application", "--bind", "0.0.0.0:8080"]
+CMD gunicorn seu_projeto.wsgi:application --bind 0.0.0.0:$PORT
