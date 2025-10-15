@@ -23,7 +23,7 @@ jobs:
       run: |
         echo "${{ secrets.GCP_SA_KEY }}" > ${HOME}/chave.json
         gcloud auth activate-service-account --key-file=${HOME}/chave.json
-        gcloud config set account $(jq -r .client_email ${HOME}/chave.json
+        gcloud config set account $(jq -r .client_email ${HOME}/chave.json)
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Build and push Docker image
