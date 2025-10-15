@@ -10,6 +10,5 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 
 RUN python manage.py collectstatic --noinput
-RUN python manage.py migrate
 
 CMD ["sh", "-c", "gunicorn portfolio2025.wsgi:application --bind 0.0.0.0:$PORT"]
