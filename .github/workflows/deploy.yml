@@ -9,28 +9,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout código
       uses: actions/checkout@v3
 
-    - name: Setup Google Cloud SDK
+    - name: Instalar Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
 
-    - name: Autenticar conta de serviço manualmente
+    - name: Ativar conta de serviço
       run: |
-        echo "${{ secrets.GCP_SA_KEY }}" > ${HOME}/chave.json
-        gcloud auth activate-service-account --key-file=${HOME}/chave.json
-        gcloud config set account $(jq -r .client_email ${HOME}/chave.json)
+        echo "${{ secrets.GCP_SA_KEY }}" > ${HOME}/gcloud-key.json
+        gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
+        gcloud config set account $(jq -r .client_email ${HOME}/gcloud-key.json)
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Build and push Docker image
+    - name: Build e push da imagem Docker
       run: |
         gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/portfolio2025
 
-    - name: Deploy to Cloud Run
+    - name: Deploy no Cloud Run
       run: |
         gcloud run deploy portfolio2025 \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/portfolio2025 \
