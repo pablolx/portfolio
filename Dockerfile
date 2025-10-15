@@ -1,15 +1,8 @@
 FROM python:3.11-slim
-
 WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
-
-ENV PYTHONUNBUFFERED=1
-
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 RUN python manage.py collectstatic --noinput
-RUN python manage.py migrate
-
-CMD ["sh", "-c", "gunicorn portfolio2025.wsgi:application --bind 0.0.0.0:$PORT"]
+ENV PORT 8080
+CMD exec gunicorn portfolio2025.wsgi:application --bind :$PORT --workers 1
