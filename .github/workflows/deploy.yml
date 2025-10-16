@@ -6,23 +6,31 @@ on:
       - main # Dispara o pipeline no push para a branch 'main'
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: ${{ secrets.GCP_REGION }}
+  # PROJECT_ID e REGION foram movidos para o escopo do Job
   SERVICE_NAME: portfolio-app
   MIGRATION_JOB_NAME: portfolio-migrate
 
 jobs:
   # ------------------------------------------------------------------
-  # JOB 1: BUILD and PUSH
+  # JOB 1: BUILD and PUSH (Construir a imagem e enviar)
   # ------------------------------------------------------------------
   build-and-push:
     runs-on: ubuntu-latest
     env:
+      # Variáveis de Configuração Injetadas (Resolvendo o erro de parsing 'env.REGION')
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.GCP_REGION }}
+      # Variável de Imagem
       IMAGE_NAME: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Autenticação Google Cloud
       - id: auth
         uses: google-github-actions/auth@v2
         with:
+          # Substitua os placeholders abaixo com seus valores reais do Workload Identity Federation
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
@@ -30,6 +38,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Configure Docker for Artifact Registry
+        # env.REGION agora está disponível no escopo do Job
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
 
       - name: Build and Push Docker Image
@@ -42,12 +51,19 @@ jobs:
           cache-to: type=gha,mode=max
 
   # ------------------------------------------------------------------
-  # JOB 2: MIGRATE
+  # JOB 2: MIGRATE (Executar as migrações como um Job Único)
   # ------------------------------------------------------------------
   run-migrations:
     needs: build-and-push
     runs-on: ubuntu-latest
+    env:
+      # Variáveis de Configuração Injetadas
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.GCP_REGION }}
+      # Variável de Imagem (ADICIONADA AQUI para acesso)
+      IMAGE_NAME: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
     steps:
+      # Autenticação Google Cloud
       - id: auth
         uses: google-github-actions/auth@v2
         with:
@@ -58,11 +74,12 @@ jobs:
         uses: google-github-actions/deploy-cloudrun-job@v0
         with:
           name: ${{ env.MIGRATION_JOB_NAME }}
-          region: ${{ env.REGION }}
+          region: ${{ env.REGION }} # env.REGION agora é local ao Job
           image: ${{ env.IMAGE_NAME }}
           wait_for_completion: true
           command: python
           args: manage.py,migrate
+          # Variáveis de ambiente para o Job de migração se conectar ao Cloud SQL
           env_vars: |
             SECRET_KEY=${{ secrets.SECRET_KEY }}
             DEBUG=False
@@ -72,12 +89,19 @@ jobs:
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
   # ------------------------------------------------------------------
-  # JOB 3: DEPLOY SERVICE
+  # JOB 3: DEPLOY SERVICE (Implantar o serviço principal)
   # ------------------------------------------------------------------
   deploy-service:
     needs: run-migrations
     runs-on: ubuntu-latest
+    env:
+      # Variáveis de Configuração Injetadas
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.GCP_REGION }}
+      # Variável de Imagem (ADICIONADA AQUI para acesso)
+      IMAGE_NAME: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
     steps:
+      # Autenticação Google Cloud
       - id: auth
         uses: google-github-actions/auth@v2
         with:
@@ -88,8 +112,9 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE_NAME }}
-          region: ${{ env.REGION }}
+          region: ${{ env.REGION }} # env.REGION agora é local ao Job
           image: ${{ env.IMAGE_NAME }}
+          # Configura o proxy do Cloud SQL para a conexão
           cloudsql_instances: ${{ secrets.CLOUD_SQL_CONN_NAME }}
           env_vars: |
             SECRET_KEY=${{ secrets.SECRET_KEY }}
