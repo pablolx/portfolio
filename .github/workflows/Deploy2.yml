@@ -3,15 +3,15 @@ name: Deploy Django to Cloud Run MySQL
 on:
   push:
     branches:
-      - main # Dispara o pipeline no push para a branch 'main'
+      - main 
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: ${{ secrets.GCP_REGION }}
   SERVICE_NAME: portfolio-app
   MIGRATION_JOB_NAME: portfolio-migrate
+  # Use a variável SERVICE_NAME diretamente aqui
   IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
-
 jobs:
   # ------------------------------------------------------------------
   # JOB 1: BUILD and PUSH (Construir a imagem e enviar para o Artifact Registry)
