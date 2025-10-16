@@ -32,8 +32,10 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # ATENÇÃO: SUBSTITUA ESTA LINHA COM O CAMINHO COMPLETO E CORRETO DO SEU WORKLOAD IDENTITY PROVIDER
-          # O formato DEVE ser: projects/ID_NUMÉRICO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER
+          # *****************************************************************************************
+          # CORREÇÃO CRÍTICA: ESTE VALOR DEVE SER SUBSTÍTUIDO PELO CAMINHO REAL DO GCP
+          # Use o ID NUMÉRICO do projeto, o nome do Pool e o nome do Provider (EXATAMENTE como no GCP)
+          # *****************************************************************************************
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
@@ -68,7 +70,10 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # ATENÇÃO: SUBSTITUA ESTA LINHA COM O CAMINHO COMPLETO E CORRETO DO SEU WORKLOAD IDENTITY PROVIDER
+          # *****************************************************************************************
+          # CORREÇÃO CRÍTICA: ESTE VALOR DEVE SER SUBSTÍTUIDO PELO CAMINHO REAL DO GCP
+          # Use o ID NUMÉRICO do projeto, o nome do Pool e o nome do Provider (EXATAMENTE como no GCP)
+          # *****************************************************************************************
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
@@ -106,7 +111,10 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # ATENÇÃO: SUBSTITUA ESTA LINHA COM O CAMINHO COMPLETO E CORRETO DO SEU WORKLOAD IDENTITY PROVIDER
+          # *****************************************************************************************
+          # CORREÇÃO CRÍTICA: ESTE VALOR DEVE SER SUBSTÍTUIDO PELO CAMINHO REAL DO GCP
+          # Use o ID NUMÉRICO do projeto, o nome do Pool e o nome do Provider (EXATAMENTE como no GCP)
+          # *****************************************************************************************
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
