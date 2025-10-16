@@ -32,7 +32,8 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # Substitua os placeholders abaixo com seus valores reais do Workload Identity Federation
+          # ATENÇÃO: SUBSTITUA ESTA LINHA COM O CAMINHO COMPLETO E CORRETO DO SEU WORKLOAD IDENTITY PROVIDER
+          # O formato DEVE ser: projects/ID_NUMÉRICO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
@@ -67,6 +68,7 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
+          # ATENÇÃO: SUBSTITUA ESTA LINHA COM O CAMINHO COMPLETO E CORRETO DO SEU WORKLOAD IDENTITY PROVIDER
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
@@ -104,6 +106,7 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
+          # ATENÇÃO: SUBSTITUA ESTA LINHA COM O CAMINHO COMPLETO E CORRETO DO SEU WORKLOAD IDENTITY PROVIDER
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
