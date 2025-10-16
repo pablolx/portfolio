@@ -19,13 +19,6 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
 
-    - name: Autenticar conta de serviço manualmente
-      run: |
-        echo "${{ secrets.GCP_SA_KEY }}" > ${HOME}/gcloud-key.json
-        gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
-        gcloud config set account $(jq -r .client_email ${HOME}/gcloud-key.json)
-        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-
     - name: Build and push Docker image
       run: |
         gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/portfolio2025
@@ -35,7 +28,5 @@ jobs:
         gcloud run deploy portfolio2025 \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/portfolio2025 \
           --platform managed \
-          --region us-central1 \
-          --allow-unauthenticated \
-          --add-cloudsql-instances=eastern-period-378119:us-central1:portfolio2025-db \
-          --set-env-vars=DATABASE_URL=${{ secrets.DATABASE_URL }}
+          --region southamerica-east1 \
+          --allow-unauthenticated
