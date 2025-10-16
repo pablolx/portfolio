@@ -9,7 +9,7 @@ env:
   SERVICE_NAME: portfolio-app
   MIGRATION_JOB_NAME: portfolio-migrate
 
-# CRUCIAL: Adiciona permissões para gerar o token OIDC, necessário para autenticar o GCP via WIF.
+# CORREÇÃO RESTAURADA: Adiciona permissões para gerar o token OIDC, necessário para autenticar o GCP via WIF.
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -28,15 +28,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Autenticação Google Cloud (Workload Identity Federation)
+      # Autenticação Google Cloud (Workload Identity Federation) - RESTAURADA
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # *****************************************************************************************
-          # CORREÇÃO CRÍTICA: ESTE VALOR DEVE SER SUBSTÍTUIDO PELO CAMINHO REAL DO GCP
-          # Use o ID NUMÉRICO do projeto, o nome do Pool e o nome do Provider (EXATAMENTE como no GCP)
-          # *****************************************************************************************
-          workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
+          # AVISO: SUBSTITUA: SEU_PROVIDER (ID Numérico 1067323421394 já aplicado, Pool 'github-pool' já aplicado)
+          workload_identity_provider: 'projects/1067323421394/locations/global/workloadIdentityPools/github-pool/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       - name: Set up Docker build
@@ -66,15 +63,12 @@ jobs:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ secrets.GCP_REGION }}
     steps:
-      # Autenticação Google Cloud
+      # Autenticação Google Cloud (Workload Identity Federation) - RESTAURADA
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # *****************************************************************************************
-          # CORREÇÃO CRÍTICA: ESTE VALOR DEVE SER SUBSTÍTUIDO PELO CAMINHO REAL DO GCP
-          # Use o ID NUMÉRICO do projeto, o nome do Pool e o nome do Provider (EXATAMENTE como no GCP)
-          # *****************************************************************************************
-          workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
+          # AVISO: SUBSTITUA: SEU_PROVIDER (ID Numérico 1067323421394 já aplicado, Pool 'github-pool' já aplicado)
+          workload_identity_provider: 'projects/1067323421394/locations/global/workloadIdentityPools/github-pool/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       - name: Run Django Migrations (Cloud Run Job)
@@ -107,15 +101,12 @@ jobs:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ secrets.GCP_REGION }}
     steps:
-      # Autenticação Google Cloud
+      # Autenticação Google Cloud (Workload Identity Federation) - RESTAURADA
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # *****************************************************************************************
-          # CORREÇÃO CRÍTICA: ESTE VALOR DEVE SER SUBSTÍTUIDO PELO CAMINHO REAL DO GCP
-          # Use o ID NUMÉRICO do projeto, o nome do Pool e o nome do Provider (EXATAMENTE como no GCP)
-          # *****************************************************************************************
-          workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
+          # AVISO: SUBSTITUA: SEU_PROVIDER (ID Numérico 1067323421394 já aplicado, Pool 'github-pool' já aplicado)
+          workload_identity_provider: 'projects/1067323421394/locations/global/workloadIdentityPools/github-pool/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       - name: Deploy to Cloud Run
