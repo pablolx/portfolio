@@ -6,7 +6,6 @@ on:
       - main # Dispara o pipeline no push para a branch 'main'
 
 env:
-  # PROJECT_ID e REGION foram movidos para o escopo do Job
   SERVICE_NAME: portfolio-app
   MIGRATION_JOB_NAME: portfolio-migrate
 
@@ -17,11 +16,10 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     env:
-      # Variáveis de Configuração Injetadas (Resolvendo o erro de parsing 'env.REGION')
+      # Variáveis de Configuração (Necessárias para o 'gcloud auth configure-docker' e cálculo abaixo)
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ secrets.GCP_REGION }}
-      # Variável de Imagem
-      IMAGE_NAME: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+      # IMAGE_NAME REMOVIDA DAQUI
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -38,7 +36,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Configure Docker for Artifact Registry
-        # env.REGION agora está disponível no escopo do Job
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
 
       - name: Build and Push Docker Image
@@ -46,7 +43,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}
+          # CÁLCULO DA IMAGEM MOVIDO PARA O PARÂMETRO 'TAGS'
+          tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -57,11 +55,10 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     env:
-      # Variáveis de Configuração Injetadas
+      # Variáveis de Configuração Injetadas (Necessárias para os steps)
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ secrets.GCP_REGION }}
-      # Variável de Imagem (ADICIONADA AQUI para acesso)
-      IMAGE_NAME: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+      # IMAGE_NAME REMOVIDA DAQUI
     steps:
       # Autenticação Google Cloud
       - id: auth
@@ -74,8 +71,9 @@ jobs:
         uses: google-github-actions/deploy-cloudrun-job@v0
         with:
           name: ${{ env.MIGRATION_JOB_NAME }}
-          region: ${{ env.REGION }} # env.REGION agora é local ao Job
-          image: ${{ env.IMAGE_NAME }}
+          region: ${{ env.REGION }}
+          # CÁLCULO DA IMAGEM MOVIDO PARA O PARÂMETRO 'IMAGE'
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
           wait_for_completion: true
           command: python
           args: manage.py,migrate
@@ -95,11 +93,10 @@ jobs:
     needs: run-migrations
     runs-on: ubuntu-latest
     env:
-      # Variáveis de Configuração Injetadas
+      # Variáveis de Configuração Injetadas (Necessárias para os steps)
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ secrets.GCP_REGION }}
-      # Variável de Imagem (ADICIONADA AQUI para acesso)
-      IMAGE_NAME: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+      # IMAGE_NAME REMOVIDA DAQUI
     steps:
       # Autenticação Google Cloud
       - id: auth
@@ -112,8 +109,9 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE_NAME }}
-          region: ${{ env.REGION }} # env.REGION agora é local ao Job
-          image: ${{ env.IMAGE_NAME }}
+          region: ${{ env.REGION }}
+          # CÁLCULO DA IMAGEM MOVIDO PARA O PARÂMETRO 'IMAGE'
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
           # Configura o proxy do Cloud SQL para a conexão
           cloudsql_instances: ${{ secrets.CLOUD_SQL_CONN_NAME }}
           env_vars: |
