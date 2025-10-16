@@ -10,54 +10,49 @@ env:
   REGION: ${{ secrets.GCP_REGION }}
   SERVICE_NAME: portfolio-app
   MIGRATION_JOB_NAME: portfolio-migrate
-  IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
 
 jobs:
   # ------------------------------------------------------------------
-  # JOB 1: BUILD and PUSH (Construir a imagem e enviar para o Artifact Registry)
+  # JOB 1: BUILD and PUSH
   # ------------------------------------------------------------------
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # Autentica o GitHub Actions com o Google Cloud (usando WIF)
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
+      - id: auth
+        uses: google-github-actions/auth@v2
         with:
-          # O provedor de WIF deve confiar no seu repo
           workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
-      # Configura o Docker para usar o Artifact Registry
       - name: Set up Docker build
         uses: docker/setup-buildx-action@v3
 
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${REGION}-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: . # Seu contexto Docker (onde está o Dockerfile)
+          context: .
           push: true
           tags: ${{ env.IMAGE_NAME }}
-          cache-from: type=gha # Otimiza o build
+          cache-from: type=gha
           cache-to: type=gha,mode=max
 
   # ------------------------------------------------------------------
-  # JOB 2: MIGRATE (Executar as migrações como um Cloud Run Job)
+  # JOB 2: MIGRATE
   # ------------------------------------------------------------------
   run-migrations:
-    needs: build-and-push # Só roda se o build for bem-sucedido
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
+      - id: auth
+        uses: google-github-actions/auth@v2
         with:
+          workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
           service_account: ${{ secrets.GCP_SA_EMAIL }}
-          # O provedor WIF aqui deve ser o mesmo do passo 1
 
       - name: Run Django Migrations (Cloud Run Job)
         uses: google-github-actions/deploy-cloudrun-job@v0
@@ -65,46 +60,41 @@ jobs:
           name: ${{ env.MIGRATION_JOB_NAME }}
           region: ${{ env.REGION }}
           image: ${{ env.IMAGE_NAME }}
-          wait_for_completion: true # Espera o job terminar
-          # O comando padrão para o Job será 'python manage.py migrate'
+          wait_for_completion: true
           command: python
           args: manage.py,migrate
-          # Variáveis de ambiente injetadas no Job
           env_vars: |
             SECRET_KEY=${{ secrets.SECRET_KEY }}
             DEBUG=False
             CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONN_NAME }}
             DB_NAME=${{ secrets.DB_NAME }}
             DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }} 
-            # Dica: Use o --set-secrets do gcloud se estiver usando o Secret Manager
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
   # ------------------------------------------------------------------
-  # JOB 3: DEPLOY SERVICE (Implantar o serviço principal)
+  # JOB 3: DEPLOY SERVICE
   # ------------------------------------------------------------------
-    # ...
+  deploy-service:
+    needs: run-migrations
+    runs-on: ubuntu-latest
+    steps:
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER'
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
 
-    deploy-service:
-      # ...
-      steps:
-        # ... (Auth steps)
-
-        - name: Deploy to Cloud Run
-          uses: google-github-actions/deploy-cloudrun@v2
-          with:
-            service: ${{ env.SERVICE_NAME }}
-            region: ${{ env.REGION }}
-            image: ${{ env.IMAGE_NAME }}
-
-            # 1. PARÂMETRO CRUCIAL: Diz ao Cloud Run para criar o proxy de conexão
-            cloudsql_instances: ${{ secrets.CLOUD_SQL_CONN_NAME }}
-
-            # 2. VARIÁVEIS CRUCIAIS: Passa as credenciais para o settings.py
-            env_vars: |
-              SECRET_KEY=${{ secrets.SECRET_KEY }}
-              DEBUG=False
-              # A variável CLOUD_SQL_CONNECTION_NAME é usada pelo settings.py
-              CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONN_NAME }} 
-              DB_NAME=${{ secrets.DB_NAME }}
-              DB_USER=${{ secrets.DB_USER }}
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE_NAME }}
+          cloudsql_instances: ${{ secrets.CLOUD_SQL_CONN_NAME }}
+          env_vars: |
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            DEBUG=False
+            CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONN_NAME }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
