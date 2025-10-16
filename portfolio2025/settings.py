@@ -80,10 +80,46 @@ WSGI_APPLICATION = 'portfolio2025.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
+        # Fallback se DATABASE_URL não estiver definida
         default='sqlite:///{}'.format(os.path.join(BASE_DIR, 'db.sqlite3')),
         conn_max_age=600
     )
 }
+
+# 2. Configuração do Google Cloud SQL (MySQL)
+# Este nome de conexão DEVE ser a variável que você está usando
+CLOUD_SQL_CONNECTION_NAME = 'eastern-period-378119:us-central1:portfolio2025-db'  # Seu valor fixo
+
+# Se o projeto estiver rodando em um ambiente onde esta variável é lida (como no Cloud Run)
+if os.environ.get('CLOUD_SQL_CONNECTION_NAME') or CLOUD_SQL_CONNECTION_NAME:
+
+    # Priorize a variável de ambiente se estiver no Cloud Run
+    final_conn_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME', CLOUD_SQL_CONNECTION_NAME)
+
+    # Estas variáveis devem ser definidas no seu ambiente de deploy (Secrets)
+    DB_NAME = os.environ.get('DB_NAME')  # Ex: 'portfolio_db'
+    DB_USER = os.environ.get('DB_USER')  # Ex: 'django_user'
+    DB_PASSWORD = os.environ.get('DB_PASSWORD')  # Ex: 'sua_senha_secreta'
+
+    if all([DB_NAME, DB_USER, DB_PASSWORD]):
+        DATABASES['default'] = {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': DB_PASSWORD,
+
+            # HOST e PORTA são placeholders, o conector usa um socket interno.
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'OPTIONS': {
+                'connector': 'google.cloud.sql.connector.django.connector.CloudSQLMySQLConnector',
+                'cloudsql_instance': final_conn_name,  # Usa o nome de conexão real
+                'charset': 'utf8mb4',
+                'init_command': "SET default_storage_engine=InnoDB, sql_mode='STRICT_TRANS_TABLES'",
+            }
+        }
+    else:
+        print("ATENÇÃO: Variáveis de ambiente DB_NAME/USER/PASSWORD não definidas para Cloud SQL.")
 
 
 

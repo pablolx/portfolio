@@ -82,29 +82,29 @@ jobs:
   # ------------------------------------------------------------------
   # JOB 3: DEPLOY SERVICE (Implantar o serviço principal)
   # ------------------------------------------------------------------
-  deploy-service:
-    needs: run-migrations # Só roda se a migração for bem-sucedida
-    runs-on: ubuntu-latest
-    steps:
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          service_account: ${{ secrets.GCP_SA_EMAIL }}
-          # O provedor WIF aqui deve ser o mesmo do passo 1
+    # ...
 
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: ${{ env.SERVICE_NAME }}
-          region: ${{ env.REGION }}
-          image: ${{ env.IMAGE_NAME }}
-          # Conexão com o Cloud SQL (obrigatório para Cloud Run)
-          cloudsql_instances: ${{ secrets.CLOUD_SQL_CONN_NAME }}
-          # Variáveis de ambiente para o serviço rodando
-          env_vars: |
-            SECRET_KEY=${{ secrets.SECRET_KEY }}
-            DEBUG=False
-            CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONN_NAME }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+    deploy-service:
+      # ...
+      steps:
+        # ... (Auth steps)
+
+        - name: Deploy to Cloud Run
+          uses: google-github-actions/deploy-cloudrun@v2
+          with:
+            service: ${{ env.SERVICE_NAME }}
+            region: ${{ env.REGION }}
+            image: ${{ env.IMAGE_NAME }}
+
+            # 1. PARÂMETRO CRUCIAL: Diz ao Cloud Run para criar o proxy de conexão
+            cloudsql_instances: ${{ secrets.CLOUD_SQL_CONN_NAME }}
+
+            # 2. VARIÁVEIS CRUCIAIS: Passa as credenciais para o settings.py
+            env_vars: |
+              SECRET_KEY=${{ secrets.SECRET_KEY }}
+              DEBUG=False
+              # A variável CLOUD_SQL_CONNECTION_NAME é usada pelo settings.py
+              CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONN_NAME }} 
+              DB_NAME=${{ secrets.DB_NAME }}
+              DB_USER=${{ secrets.DB_USER }}
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
