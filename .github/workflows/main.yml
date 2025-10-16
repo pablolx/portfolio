@@ -1,0 +1,110 @@
+name: Deploy Django to Cloud Run MySQL
+
+on:
+  push:
+    branches:
+      - main # Dispara o pipeline no push para a branch 'main'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
+  SERVICE_NAME: portfolio-app
+  MIGRATION_JOB_NAME: portfolio-migrate
+  IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+
+jobs:
+  # ------------------------------------------------------------------
+  # JOB 1: BUILD and PUSH (Construir a imagem e enviar para o Artifact Registry)
+  # ------------------------------------------------------------------
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Autentica o GitHub Actions com o Google Cloud (usando WIF)
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          # O provedor de WIF deve confiar no seu repo
+          workload_identity_provider: 'projects/SEU_NUMERO_PROJETO/locations/global/workloadIdentityPools/SEU_POOL/providers/SEU_PROVIDER' 
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      # Configura o Docker para usar o Artifact Registry
+      - name: Set up Docker build
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${REGION}-docker.pkg.dev
+        
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: . # Seu contexto Docker (onde está o Dockerfile)
+          push: true
+          tags: ${{ env.IMAGE_NAME }}
+          cache-from: type=gha # Otimiza o build
+          cache-to: type=gha,mode=max
+
+  # ------------------------------------------------------------------
+  # JOB 2: MIGRATE (Executar as migrações como um Cloud Run Job)
+  # ------------------------------------------------------------------
+  run-migrations:
+    needs: build-and-push # Só roda se o build for bem-sucedido
+    runs-on: ubuntu-latest
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+          # O provedor WIF aqui deve ser o mesmo do passo 1
+
+      - name: Run Django Migrations (Cloud Run Job)
+        uses: google-github-actions/deploy-cloudrun-job@v0
+        with:
+          name: ${{ env.MIGRATION_JOB_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE_NAME }}
+          wait_for_completion: true # Espera o job terminar
+          # O comando padrão para o Job será 'python manage.py migrate'
+          command: python
+          args: manage.py,migrate
+          # Variáveis de ambiente injetadas no Job
+          env_vars: |
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            DEBUG=False
+            CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONN_NAME }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }} 
+            # Dica: Use o --set-secrets do gcloud se estiver usando o Secret Manager
+          
+  # ------------------------------------------------------------------
+  # JOB 3: DEPLOY SERVICE (Implantar o serviço principal)
+  # ------------------------------------------------------------------
+  deploy-service:
+    needs: run-migrations # Só roda se a migração for bem-sucedida
+    runs-on: ubuntu-latest
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+          # O provedor WIF aqui deve ser o mesmo do passo 1
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE_NAME }}
+          # Conexão com o Cloud SQL (obrigatório para Cloud Run)
+          cloudsql_instances: ${{ secrets.CLOUD_SQL_CONN_NAME }} 
+          # Variáveis de ambiente para o serviço rodando
+          env_vars: |
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            DEBUG=False
+            CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONN_NAME }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
