@@ -9,16 +9,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 1. ATUALIZAÇÃO E INSTALAÇÃO DE DEPENDÊNCIAS DE BUILD
 # Executa o update em uma camada separada e faz a limpeza imediatamente após
 RUN apt-get update \
-    # Força a reconfiguração de quaisquer pacotes quebrados antes da instalação
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends --fix-missing \
+    && apt-get install -y --no-install-recommends \
         build-essential \
-        default-libmysqlclient-dev \
+        libmysqlclient-dev \
+        libpq-dev \
+        libjpeg-dev \
+        zlib1g-dev \
+        libffi-dev \
+        libssl-dev \
         gcc \
         pkg-config \
-    # Limpeza para reduzir o tamanho da camada
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Crie e defina o diretório de trabalho
 WORKDIR /app
