@@ -1,41 +1,17 @@
-# Nome do workflow que aparecerá na aba "Actions" do GitHub
-name: Deploy to Heroku
+  - name: Log in to Heroku Container Registry
+    uses: akhileshns/heroku-docker-login@v1
+    with:
+      email: ${{ secrets.HEROKU_EMAIL }}
+      api_key: ${{ secrets.HEROKU_API_KEY }}
 
-# Define quando este workflow deve rodar
-on:
-  push:
-    branches:
-      - main # Roda toda vez que houver um push na branch 'main'
+  - name: Build Docker image
+    run: |
+      docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web .
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest # O tipo de máquina que vai executar os passos
+  - name: Push Docker image to Heroku Container Registry
+    run: |
+      docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
-    steps:
-      # 1. Clona o seu repositório para a máquina virtual do GitHub
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # 2. Faz login no registro de contêineres do Heroku
-      #    Usa os secrets que você configurou no GitHub para autenticação segura
-      - name: Log in to Heroku Container Registry
-        uses: akhileshns/heroku-docker-login@v1
-        with:
-          email: ${{ secrets.HEROKU_EMAIL }}
-          api_key: ${{ secrets.HEROKU_API_KEY }}
-
-      # 3. Constrói a imagem Docker
-      #    Usa o nome do app do Heroku (via secret) para nomear a imagem corretamente
-      - name: Build Docker image
-        run: |
-          docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web .
-
-      # 4. Envia a imagem Docker para o Heroku
-      - name: Push Docker image to Heroku Container Registry
-        run: |
-          docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
-
-      # 5. Libera a nova imagem, fazendo o deploy da aplicação no Heroku
-      - name: Release app on Heroku
-        run: |
-          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
+  - name: Release app on Heroku
+    run: |
+      heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
