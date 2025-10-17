@@ -7,12 +7,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 1. ATUALIZAÇÃO E INSTALAÇÃO DE DEPENDÊNCIAS DE BUILD
 # Executa o update em uma camada separada e faz a limpeza imediatamente após
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends --fix-missing \
-    build-essential \
-    default-libmysqlclient-dev \
-    gcc \
-    pkg-config \
+RUN apt-get update \
+    # Força a reconfiguração de quaisquer pacotes quebrados antes da instalação
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends --fix-missing \
+        build-essential \
+        default-libmysqlclient-dev \
+        gcc \
+        pkg-config \
     # Limpeza para reduzir o tamanho da camada
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
