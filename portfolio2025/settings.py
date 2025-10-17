@@ -66,8 +66,9 @@ WSGI_APPLICATION = 'portfolio2025.wsgi.application'
 
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': dj_database_url.config(default='postgres://usuario:senha@localhost:5432/postgresql-animate-41780')
 }
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
