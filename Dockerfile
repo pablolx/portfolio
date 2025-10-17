@@ -1,10 +1,11 @@
-# ----------------------------------------------------------------------
-# STAGE 1: BUILD (Compila dependências)
-# ----------------------------------------------------------------------
+# STAGE 1: BUILD (Compila dependências e prepara o ambiente)
+# Usamos o python:3.11-slim-buster como base
 FROM python:3.11-slim-buster AS builder
 
-# Instala as ferramentas de build necessárias (gcc, libs do mysql, etc.)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# 1. ATUALIZAÇÃO E INSTALAÇÃO DE DEPENDÊNCIAS DE BUILD
+# Executa o update em uma camada separada e faz a limpeza imediatamente após
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
     build-essential \
     default-libmysqlclient-dev \
     gcc \
@@ -19,11 +20,10 @@ WORKDIR /app
 # Copie e instale dependências Python
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
-# Instala mysqlclient e google-cloud-sql-connector
 RUN pip install -r requirements.txt
 
 # ----------------------------------------------------------------------
-# STAGE 2: RUNTIME (Ambiente de execução final, menor e mais seguro)
+# STAGE 2: RUNTIME (Ambiente de execução final, menor e mais seguro para o Cloud Run)
 # ----------------------------------------------------------------------
 FROM python:3.11-slim-buster AS runtime
 
@@ -34,23 +34,21 @@ USER appuser
 # Configura variáveis de ambiente
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+# O Cloud Run injeta a porta em $PORT (geralmente 8080).
+ENV PORT 8080
 WORKDIR /home/appuser/app
 
-# Copia apenas as dependências e o código necessários do stage "builder"
-# Copia as dependências Python instaladas do stage anterior
+# Copia apenas as dependências essenciais e o executável do Gunicorn do stage "builder"
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin/gunicorn /usr/local/bin/
 
-# Copia o restante do código da sua aplicação (como appuser)
+# Copia o restante do código da sua aplicação
 COPY --chown=appuser:appuser . /home/appuser/app/
 
 # Colete arquivos estáticos
-# O Cloud Run Jobs pode fazer isso se necessário, mas para o serviço principal:
-# RUN python manage.py collectstatic --no-input
+RUN python manage.py collectstatic --no-input
 
-# Exponha a porta
-EXPOSE 8000
-
-# Comando padrão para rodar a aplicação usando Gunicorn
-# Confirme se "Portfolio.wsgi:application" é o caminho correto para o seu WSGI
-CMD ["gunicorn", "Portfolio.wsgi:application", "--bind", "0.0.0.0:8000"]
+# O comando padrão para rodar a aplicação usando Gunicorn
+# Bind 0.0.0.0:${PORT} garante que ele escute na porta que o Cloud Run injeta.
+# Confirme se "Portfolio.wsgi:application" é o caminho correto para o seu WSGI.
+CMD ["gunicorn", "Portfolio.wsgi:application", "--bind", "0.0.0.0:${PORT}"]
