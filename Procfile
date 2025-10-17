@@ -1,0 +1,1 @@
+web: gunicorn porfolio2025.wsgi

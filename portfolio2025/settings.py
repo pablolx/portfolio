@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,60 +65,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'portfolio2025.wsgi.application'
 
 
-# Database
-# ------------------------------------------------------------------
-# 1. Configuração do Google Cloud SQL (Prioridade em Produção)
-# ------------------------------------------------------------------
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
 
-# Estas variáveis serão injetadas pelo Cloud Run (Secrets do GitHub)
-DB_NAME = os.environ.get('DB_NAME')
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-CLOUD_SQL_CONNECTION_NAME = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
-
-# Verifica se todas as credenciais de produção estão presentes
-if all([CLOUD_SQL_CONNECTION_NAME, DB_NAME, DB_USER, DB_PASSWORD]):
-
-    # Se estivermos em produção e com credenciais completas, use Cloud SQL Connector.
-    print("Configurando Cloud SQL: Conexão segura via CloudSQLMySQLConnector.")
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': DB_NAME,
-            'USER': DB_USER,
-            'PASSWORD': DB_PASSWORD,
-
-            # HOST e PORTA são placeholders, o conector usa um socket interno.
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
-            'OPTIONS': {
-                'connector': 'google.cloud.sql.connector.django.connector.CloudSQLMySQLConnector',
-                'cloudsql_instance': CLOUD_SQL_CONNECTION_NAME,  # Usa o nome de conexão real
-                'charset': 'utf8mb4',
-                'init_command': "SET default_storage_engine=InnoDB, sql_mode='STRICT_TRANS_TABLES'",
-            }
-        }
-    }
-    # Recomendado em produção: Trust the X-Forwarded-Proto header
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-else:
-    # ------------------------------------------------------------------
-    # 2. Configuração de Desenvolvimento (SQLite ou DATABASE_URL)
-    # ------------------------------------------------------------------
-    print("Configurando Banco de Dados Local (SQLite ou DATABASE_URL).")
-
-    DATABASES = {
-        'default': dj_database_url.config(
-            # Fallback para DATABASE_URL ou SQLite
-            default='sqlite:///{}'.format(os.path.join(BASE_DIR, 'db.sqlite3')),
-            conn_max_age=600
-        )
-    }
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -160,3 +111,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
