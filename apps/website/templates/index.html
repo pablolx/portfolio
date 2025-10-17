@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Portfólio de Projetos</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <header>
+    <h3>Portfólio de Projetos de</h3>
+    <h1>Pablo C. Pinheiro</h1>
+  </header>
+
+  <main>
+    <section class="projects-section">
+      <h2>Projetos</h2>
+      <div class="projects-grid">
+        {% for p in projects %}
+          <div class="project-card">
+            <div class="card-header">
+              <h3>{{ p.title }}</h3>
+            </div>
+            <div class="card-body">
+              <p>{{ p.description }}</p>
+              <ul class="tech-list">
+                {% for tech in p.tech_stack %}
+                  <li>{{ tech }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="card-footer">
+              <a href="{{ p.repo_url }}" target="_blank">🔗 GitHub</a>
+              {% if p.live_url %}
+                <a href="{{ p.live_url }}" target="_blank">🚀 Ver Online</a>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <p class="empty">Nenhum projeto ainda.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+</body>
+</html>
