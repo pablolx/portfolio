@@ -56,4 +56,5 @@ RUN python manage.py collectstatic --no-input
 # O comando padrão para rodar a aplicação usando Gunicorn
 # Bind 0.0.0.0:${PORT} garante que ele escute na porta que o Cloud Run injeta.
 # Confirme se "Portfolio.wsgi:application" é o caminho correto para o seu WSGI.
-CMD ["gunicorn", "Portfolio.wsgi:application", "--bind", "0.0.0.0:${PORT}"]
+CMD ["gunicorn", "portfolio2025.wsgi:application", "--bind", "0.0.0.0:${PORT}"]
+
