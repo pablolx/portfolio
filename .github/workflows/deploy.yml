@@ -17,11 +17,8 @@ jobs:
       # 👈 Aqui começa a parte que você nos forneceu
       # Note que a indentação deve ser consistente sob 'steps'
       # ----------------------------------------------------
-      - name: Log in to Heroku Container Registry
-        uses: akhileshns/heroku-docker-login@v3 # Recomendo usar a versão mais recente
-        with:
-          email: ${{ secrets.HEROKU_EMAIL }}
-          api_key: ${{ secrets.HEROKU_API_KEY }}
+      - name: Login to Heroku Container Registry
+        run: echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Build Docker image
         run: |
