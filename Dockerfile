@@ -38,10 +38,10 @@ RUN useradd --create-home appuser
 USER appuser
 
 # Configura variáveis de ambiente
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 # O Cloud Run injeta a porta em $PORT (geralmente 8080).
-ENV PORT 8080
+ENV PORT=8080
 WORKDIR /home/appuser/app
 
 # Copia apenas as dependências essenciais e o executável do Gunicorn do stage "builder"
