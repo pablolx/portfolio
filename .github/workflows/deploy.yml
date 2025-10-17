@@ -1,9 +1,44 @@
-# ------------------------------------------------------------------
-      # Passo 1: Instalar a CLI do Heroku (Método via script oficial)
+name: Deploy Docker to Heroku
+
+on:
+  push:
+    branches:
+      - main
+
+jobs: # <-- Nível 1: Jobs
+  deploy: # <-- Nível 2: Nome do Job
+    runs-on: ubuntu-latest
+
+    steps: # <-- Nível 3: Sequência de passos
+
       # ------------------------------------------------------------------
-      - name: Install Heroku CLI (via script)
-        run: |
+      # Passo 1: Checkout do Código
+      # ------------------------------------------------------------------
+      - uses: actions/checkout@v4 # <-- Nível 4: O hífen (-) inicia o primeiro passo
+
+      # ------------------------------------------------------------------
+      # Passo 2: Instalar a CLI do Heroku (Solução para "heroku: command not found")
+      # ------------------------------------------------------------------
+      - name: Install Heroku CLI (via script) # <-- Nível 4: O hífen (-) inicia o segundo passo
+        run: | # <-- Nível 5: O 'run' é aninhado sob o 'name'
           curl https://cli-assets.heroku.com/install.sh | sh
-          
-          # Confirma se o comando 'heroku' agora está disponível
           heroku --version
+
+      # ------------------------------------------------------------------
+      # Seus passos seguintes devem continuar no Nível 4 (com hífen e no mesmo alinhamento)
+      # ------------------------------------------------------------------
+      - name: Log in to Heroku Container Registry
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
+
+      - name: Build Docker image
+        run: |
+          docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web .
+
+      - name: Push Docker image to Heroku Container Registry
+        run: |
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+
+      - name: Release app on Heroku
+        run: |
+          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
