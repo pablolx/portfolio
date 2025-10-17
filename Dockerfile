@@ -2,10 +2,13 @@
 # Usamos o python:3.11-slim-buster como base
 FROM python:3.11-slim-buster AS builder
 
+# Define o frontend Debian como não-interativo para evitar prompts em ambientes CI
+ENV DEBIAN_FRONTEND=noninteractive
+
 # 1. ATUALIZAÇÃO E INSTALAÇÃO DE DEPENDÊNCIAS DE BUILD
 # Executa o update em uma camada separada e faz a limpeza imediatamente após
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends --fix-missing \
     build-essential \
     default-libmysqlclient-dev \
     gcc \
