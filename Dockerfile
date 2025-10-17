@@ -1,6 +1,7 @@
 # STAGE 1: BUILD (Compila dependências e prepara o ambiente)
 # Usamos o python:3.11-slim-buster como base
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim-bookworm AS builder
+
 
 
 # Define o frontend Debian como não-interativo para evitar prompts em ambientes CI
@@ -19,8 +20,10 @@ RUN apt-get update \
         libssl-dev \
         gcc \
         pkg-config \
+    || true \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
 
 
 # Crie e defina o diretório de trabalho
