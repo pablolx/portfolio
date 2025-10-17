@@ -10,24 +10,48 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4 # 👈 Passo 1: Fazer o checkout do código
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # ----------------------------------------------------
-      # 👈 Aqui começa a parte que você nos forneceu
-      # Note que a indentação deve ser consistente sob 'steps'
-      # ----------------------------------------------------
-      - name: Login to Heroku Container Registry
-        run: echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
+      # ------------------------------------------------------------------
+      # Passo 1: Instalar a CLI do Heroku
+      # Necessário para rodar o comando 'heroku container:release'
+      # ------------------------------------------------------------------
+      - name: Install Heroku CLI
+        run: |
+          sudo snap install heroku --classic
+          # Opcional: Adicionar a CLI ao PATH, caso o snap não faça automaticamente
+          echo "$HOME/.local/share/heroku/client" >> $GITHUB_PATH 
 
+      # ------------------------------------------------------------------
+      # Passo 2: Logar no Heroku Container Registry
+      # Método alternativo usando 'docker login' com a chave de API
+      # Resolve o erro 'repository not found' da Action akhileshns
+      # ------------------------------------------------------------------
+      - name: Log in to Heroku Container Registry
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
+
+      # ------------------------------------------------------------------
+      # Passo 3: Buildar a imagem Docker
+      # ------------------------------------------------------------------
       - name: Build Docker image
         run: |
+          # O app name é usado para taggear a imagem
           docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web .
 
+      # ------------------------------------------------------------------
+      # Passo 4: Fazer Push da imagem para o Registry do Heroku
+      # ------------------------------------------------------------------
       - name: Push Docker image to Heroku Container Registry
         run: |
           docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
+      # ------------------------------------------------------------------
+      # Passo 5: Fazer Release da imagem no Heroku
+      # ------------------------------------------------------------------
       - name: Release app on Heroku
         run: |
-          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}PP_NAME }}
+          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}ts.HEROKU_APP_NAME }}PP_NAME }}
