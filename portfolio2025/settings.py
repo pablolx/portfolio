@@ -113,3 +113,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://portfoliopablopinheiro.herokuapp.com',
+    'https://portfoliopablopinheiro-4e6c17cedfbd.herokuapp.com',
+]
+
