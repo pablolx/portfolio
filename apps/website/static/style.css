@@ -56,3 +56,9 @@
   object-fit: cover;
   border-radius: 8px;
 }
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
