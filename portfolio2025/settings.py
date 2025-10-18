@@ -11,9 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-+m@g_z##k(l=2!@#v&ky%h_m^3_xm*x9i*=xl^*o)7%umicb1e')
 
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+# SECURITY WARNING: don't run with debug turned on in production!
+# Use 'True' apenas em desenvolvimento. O Cloud Run injetará 'False' via env_vars.
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
+# Use '*' em dev. Em produção (Cloud Run), ele usará o domínio injetado automaticamente.
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -104,8 +107,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'apps' / 'website' / 'static' / 'images']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'apps', 'website', 'static', 'images')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
@@ -114,9 +117,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://portfoliopablopinheiro.herokuapp.com',
-    'https://portfoliopablopinheiro-4e6c17cedfbd.herokuapp.com',
-]
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 
