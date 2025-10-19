@@ -1,15 +1,20 @@
 import os
 from pathlib import Path
+from decouple import config, Csv
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🔐 Segurança
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-+m@g_z##k(l=2!@#v&ky%h_m^3_xm*x9i*=xl^*o)7%umicb1e')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-+m@g_z##k(l=2!@#v&ky%h_m^3_xm*x9i*=xl^*o)7%umicb1e')
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 # 🌐 Domínios permitidos
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+
+# 🛡️ CSRF com esquema obrigatório (Django 4+)
+raw_csrf_origins = config('CSRF_TRUSTED_ORIGINS', default='http://localhost,http://127.0.0.1')
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in raw_csrf_origins.split(',') if origin.strip().startswith(('http://', 'https://'))]
 
 # 📦 Aplicativos instalados
 INSTALLED_APPS = [
@@ -57,9 +62,9 @@ WSGI_APPLICATION = 'portfolio2025.wsgi.application'
 # 🗄️ Banco de dados
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=config('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3'),
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=False  # Para ambiente local, mantenha False
     )
 }
 
@@ -85,6 +90,3 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # 🔑 Chave primária padrão
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# 🛡️ CSRF
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')

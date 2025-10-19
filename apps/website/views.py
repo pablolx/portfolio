@@ -16,4 +16,4 @@ def portfolio(request):
     context = {
         "repos": repos,
     }
-    return render(request, "portfolio.html", context)
+    return render(request, "index.html", context)
