@@ -1,56 +1,96 @@
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Portfólio de Projetos</title>
-  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <title>Portfólio Profissional</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <header>
+<div class="container py-5">
+  <h1 class="mb-4">Portfólio de Desenvolvedor Python</h1>
 
-  <section class="profile-section">
-    <div class="profile-container">
-      <img src="{% static 'images/pablo.png' %}" alt="Foto de Pablo C. Pinheiro" class="profile-photo">
-      <div class="profile-info">
-        <h2>Sobre Mim</h2>
-        <p>Sou desenvolvedor Full Stack com experiência em Python, Django, Docker e PostgreSQL. Gosto de criar soluções eficientes e escaláveis, com foco em boas práticas e deploy contínuo.</p>
-        <p>Atualmente desenvolvo projetos pessoais e colaborativos, sempre buscando aprender e evoluir tecnicamente.</p>
-      </div>
+  <!-- Nav Tabs -->
+  <ul class="nav nav-tabs" id="portfolioTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#sobre" type="button">Sobre</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#projetos" type="button">Projetos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#habilidades" type="button">Habilidades</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#blog" type="button">Blog</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contato" type="button">Contato</button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content mt-4">
+    <!-- Sobre -->
+    <div class="tab-pane fade show active" id="sobre" role="tabpanel">
+      <p>Sou desenvolvedor Python especializado em aplicações web com Django e Flask. Apaixonado por código limpo, APIs REST e automações.</p>
     </div>
-  </section>
 
-  </header>
-
-  <main>
-    <section class="projects-section">
-      <h2>Projetos</h2>
-      <div class="projects-grid">
-        {% for p in projects %}
-          <div class="project-card">
-            <div class="card-header">
-              <h3>{{ p.title }}</h3>
-            </div>
+    <!-- Projetos -->
+    <div class="tab-pane fade" id="projetos" role="tabpanel">
+      <div class="row">
+        {% for repo in repos %}
+        <div class="col-md-6 mb-3">
+          <div class="card">
             <div class="card-body">
-              <p>{{ p.description }}</p>
-              <ul class="tech-list">
-                {% for tech in p.tech_stack %}
-                  <li>{{ tech }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="card-footer">
-              <a href="{{ p.repo_url }}" target="_blank">🔗 GitHub</a>
-              {% if p.live_url %}
-                <a href="{{ p.live_url }}" target="_blank">🚀 Ver Online</a>
-              {% endif %}
+              <h5 class="card-title">
+                <a href="{{ repo.html_url }}" target="_blank">{{ repo.name }}</a>
+              </h5>
+              <p class="card-text">{{ repo.description|default:"Sem descrição." }}</p>
+              <p><strong>Linguagem:</strong> {{ repo.language|default:"N/A" }}</p>
+              <p>⭐ {{ repo.stargazers_count }}</p>
             </div>
           </div>
-        {% empty %}
-          <p class="empty">Nenhum projeto ainda.</p>
+        </div>
         {% endfor %}
       </div>
-    </section>
-  </main>
+    </div>
+
+    <!-- Habilidades -->
+    <div class="tab-pane fade" id="habilidades" role="tabpanel">
+      <ul>
+        <li>Python, Django, Flask, FastAPI</li>
+        <li>HTML, CSS, JavaScript, Bootstrap</li>
+        <li>PostgreSQL, Docker, Git, CI/CD</li>
+      </ul>
+    </div>
+
+    <!-- Blog -->
+    <div class="tab-pane fade" id="blog" role="tabpanel">
+      <p>Em breve: artigos sobre boas práticas com Python, segurança em aplicações web e tutoriais com Django REST Framework.</p>
+    </div>
+
+    <!-- Contato -->
+    <div class="tab-pane fade" id="contato" role="tabpanel">
+      <form>
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome</label>
+          <input type="text" class="form-control" id="nome">
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email">
+        </div>
+        <div class="mb-3">
+          <label for="mensagem" class="form-label">Mensagem</label>
+          <textarea class="form-control" id="mensagem" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
