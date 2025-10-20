@@ -1,0 +1,21 @@
+<!-- apps/website/templates/projetos.html -->
+
+<div class="row">
+  {% for projeto in projetos %}
+  <div class="col-md-6 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">
+            <p>Nome do projeto: </p>
+            <h3>{{ projeto.title }}</h3>
+        </div>
+        <hr>
+        <p>Url: <a href="{{ projeto.live_url }}" target="_blank">{{ projeto.live_url }}</a></p>
+        <p>Repositório: <a href="{{ projeto.repo_url }}" target="_blank">{{ projeto.repo_url }}</a></p>
+        <p><strong>Tecnologias: </strong><pre>{{ projeto.description|default:"Sem descrição." }}</pre></p>
+          <p><strong>Criado em:</strong> {{ projeto.created_at }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>

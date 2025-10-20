@@ -1,15 +1,10 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Portfólio Profissional</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container py-5">
-  <h1 class="mb-4">Portfólio de Desenvolvedor Python</h1>
+{% extends "main.html" %}
 
+
+{% block title %}Pablo C. Pinheiro{% endblock %}
+
+{% block content %}
+<div class="container py-5">
   <!-- Nav Tabs -->
   <ul class="nav nav-tabs" id="portfolioTabs" role="tablist">
     <li class="nav-item" role="presentation">
@@ -17,12 +12,6 @@
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#projetos" type="button">Projetos</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#habilidades" type="button">Habilidades</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#blog" type="button">Blog</button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contato" type="button">Contato</button>
@@ -38,36 +27,7 @@
 
     <!-- Projetos -->
     <div class="tab-pane fade" id="projetos" role="tabpanel">
-      <div class="row">
-        {% for repo in repos %}
-        <div class="col-md-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">
-                <a href="{{ repo.html_url }}" target="_blank">{{ repo.name }}</a>
-              </h5>
-              <p class="card-text">{{ repo.description|default:"Sem descrição." }}</p>
-              <p><strong>Linguagem:</strong> {{ repo.language|default:"N/A" }}</p>
-              <p>⭐ {{ repo.stargazers_count }}</p>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Habilidades -->
-    <div class="tab-pane fade" id="habilidades" role="tabpanel">
-      <ul>
-        <li>Python, Django, Flask, FastAPI</li>
-        <li>HTML, CSS, JavaScript, Bootstrap</li>
-        <li>PostgreSQL, Docker, Git, CI/CD</li>
-      </ul>
-    </div>
-
-    <!-- Blog -->
-    <div class="tab-pane fade" id="blog" role="tabpanel">
-      <p>Em breve: artigos sobre boas práticas com Python, segurança em aplicações web e tutoriais com Django REST Framework.</p>
+        {% include "projetos.html" %}
     </div>
 
     <!-- Contato -->
@@ -92,5 +52,4 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}
