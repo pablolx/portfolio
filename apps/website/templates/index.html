@@ -1,55 +1,53 @@
 {% extends "main.html" %}
 
+{% load static %}
 
 {% block title %}Pablo C. Pinheiro{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <!-- Nav Tabs -->
-  <ul class="nav nav-tabs" id="portfolioTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#sobre" type="button">Sobre</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#projetos" type="button">Projetos</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contato" type="button">Contato</button>
-    </li>
-  </ul>
+<link rel="stylesheet" href="{% static 'style.css' %}">
+<div class="portfolio-container">
+    <ul class="nav-tabs" id="portfolioTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-tab-target="#sobre" type="button">Sobre</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-tab-target="#projetos" type="button">Projetos</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-tab-target="#contato" type="button">Contato</button>
+        </li>
+    </ul>
 
-  <!-- Tab Content -->
-  <div class="tab-content mt-4">
-    <!-- Sobre -->
-    <div class="tab-pane fade show active" id="sobre" role="tabpanel">
-      <p>Sou desenvolvedor Python especializado em aplicações web com Django e Flask. Apaixonado por código limpo, APIs REST e automações.</p>
-    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="sobre" role="tabpanel">
+            <p>Sou desenvolvedor Python especializado em aplicações web com Django e Flask. Apaixonado por código limpo, APIs REST e automações.</p>
+        </div>
 
-    <!-- Projetos -->
-    <div class="tab-pane fade" id="projetos" role="tabpanel">
-        {% include "projetos.html" %}
-    </div>
+        <div class="tab-pane" id="projetos" role="tabpanel">
+            {% include "projetos.html" %}
+        </div>
 
-    <!-- Contato -->
-    <div class="tab-pane fade" id="contato" role="tabpanel">
-      <form>
-        <div class="mb-3">
-          <label for="nome" class="form-label">Nome</label>
-          <input type="text" class="form-control" id="nome">
+        <div class="tab-pane" id="contato" role="tabpanel">
+            <form class="contact-form">
+                <div class="form-group">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" class="form-input" id="nome">
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-input" id="email">
+                </div>
+                <div class="form-group">
+                    <label for="mensagem" class="form-label">Mensagem</label>
+                    <textarea class="form-input" id="mensagem" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn primary-btn">Enviar</button>
+            </form>
         </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email">
-        </div>
-        <div class="mb-3">
-          <label for="mensagem" class="form-label">Mensagem</label>
-          <textarea class="form-control" id="mensagem" rows="3"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Enviar</button>
-      </form>
     </div>
-  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/tabs.js' %}"></script>
+
 {% endblock %}

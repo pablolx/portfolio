@@ -1,131 +1,163 @@
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
-  line-height: 1.6;
-  font-size: 16px;
-}
-
-/* Cabeçalho */
-header {
-  background-color: #0d1b2a;
-  color: #fff;
-  padding: 20px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header h1 {
-  font-size: 24px;
-}
-
-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-nav a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-nav a:hover {
-  color: #00aaff;
-}
-
-/* Seções */
-section {
-  padding: 60px 40px;
-  max-width: 1000px;
-  margin: auto;
-}
-
-section h2 {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: #0d1b2a;
-}
-
-section p {
-  margin-bottom: 20px;
-}
-
-/* Cards de projeto */
-.project-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease;
-}
-
-.project-card:hover {
-  transform: translateY(-5px);
-}
-
-/* Formulário de contato */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-input, textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
-}
-
-button {
-  padding: 12px;
-  background-color: #00aaff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0077cc;
-}
-
-/* Rodapé */
-footer {
-  background-color: #0d1b2a;
-  color: #fff;
-  text-align: center;
-  padding: 20px;
-  font-size: 14px;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  header, section {
-    padding: 20px;
-  }
-
-  nav ul {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4; /* Fundo cinza claro para o corpo */
+    color: #333;
+    display: flex; /* Permite que o footer fique no final */
     flex-direction: column;
-    gap: 10px;
-  }
+    min-height: 100vh; /* Garante que o corpo ocupe toda a altura da tela */
+}
 
-  section h2 {
-    font-size: 24px;
-  }
+/* --- Navbar (Cabeçalho) --- */
+nav {
+    background-color: #333; /* Cor escura para a barra de navegação */
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.container-fluid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between; /* Espaço entre os itens */
+    align-items: center;
+}
+
+.navbar-brand {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    margin: 0 20px 0 0; /* Espaçamento entre as informações */
+}
+
+nav p.navbar-brand {
+    font-size: 0.9em;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+/* --- Main (Conteúdo Principal) --- */
+main {
+    flex-grow: 1; /* Permite que o conteúdo principal ocupe o espaço restante */
+    width: 100%;
+    /* O conteúdo específico será centralizado pelo CSS do portfolio.css,
+       mas o main deve ser flexível. */
+}
+
+/* --- Rodapé (Footer) --- */
+footer {
+    background-color: #222; /* Cor mais escura que o nav */
+    color: #ccc;
+    text-align: center;
+    padding: 15px 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.8em;
+}
+
+.portfolio-container {
+    max-width: 900px;
+    margin: 50px auto; /* Centraliza e adiciona espaçamento superior/inferior */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Estilo das Abas de Navegação --- */
+.nav-tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    display: flex; /* Coloca os itens lado a lado */
+    border-bottom: 2px solid #ddd;
+}
+
+.nav-item {
+    margin-right: 1px;
+}
+
+.nav-link {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #555;
+    transition: color 0.3s, background-color 0.3s;
+    border-bottom: 2px solid transparent; /* Para o efeito de aba ativa */
+}
+
+.nav-link:hover {
+    color: #007bff;
+}
+
+/* Estado Ativo (Selecionado) */
+.nav-link.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    font-weight: bold;
+}
+
+/* --- Conteúdo das Abas --- */
+.tab-content {
+    padding: 15px 0;
+}
+
+.tab-pane {
+    display: none; /* Esconde o conteúdo por padrão */
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.tab-pane.active {
+    display: block; /* Mostra o conteúdo ativo */
+    opacity: 1;
+}
+
+/* --- Estilo do Formulário de Contato --- */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block; /* Garante que a label ocupe sua própria linha */
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Garante que padding não aumente o tamanho total */
+    font-size: 16px;
+}
+
+/* Estilo do Botão Principal */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.primary-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: #0056b3;
 }
