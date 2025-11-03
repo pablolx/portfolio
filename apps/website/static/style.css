@@ -1,15 +1,74 @@
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* Cabeçalho */
+header {
+  background-color: #0d1b2a;
+  color: #fff;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 24px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #00aaff;
+}
+
+/* Seções */
+section {
+  padding: 60px 40px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+section h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #0d1b2a;
+}
+
+section p {
+  margin-bottom: 20px;
+}
+
+/* Cards de projeto */
 .project-card {
-  background: #fff;
+  background-color: #fff;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 1.5rem;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   transition: transform 0.3s ease;
 }
 
@@ -17,48 +76,56 @@
   transform: translateY(-5px);
 }
 
-.card-header h3 {
-  margin: 0;
-  font-size: 1.4rem;
-  color: #333;
-}
-
-.card-body p {
-  margin: 1rem 0;
-  color: #666;
-}
-
-.tech-list {
-  list-style: none;
-  padding: 0;
+/* Formulário de contato */
+form {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.tech-list li {
-  background: #eee;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
+input, textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
 }
 
-.card-footer a {
-  margin-right: 1rem;
-  text-decoration: none;
-  color: #0077cc;
+button {
+  padding: 12px;
+  background-color: #00aaff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
   font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.profile-photo {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 8px;
+button:hover {
+  background-color: #0077cc;
 }
 
-.profile-container {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+/* Rodapé */
+footer {
+  background-color: #0d1b2a;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  header, section {
+    padding: 20px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  section h2 {
+    font-size: 24px;
+  }
 }
