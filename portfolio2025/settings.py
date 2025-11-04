@@ -83,9 +83,9 @@ USE_TZ = True
 
 # 📁 Arquivos estáticos
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Aponta para a pasta 'static' na raiz do projeto
-]
+#STATICFILES_DIRS = [
+#    BASE_DIR / 'static',  # Aponta para a pasta 'static' na raiz do projeto
+#]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # 📌 NOVO: Configuração WhiteNoise para compressão e caching
