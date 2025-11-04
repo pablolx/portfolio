@@ -103,7 +103,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ... (após STATIC_ROOT) ...
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # --- CONFIGURAÇÃO DE ARQUIVOS DE MÍDIA (Uploads do Usuário) ---
 MEDIA_URL = '/media/'
