@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from decouple import config, Csv
 import dj_database_url
@@ -28,8 +29,8 @@ INSTALLED_APPS = [
 
 # ⚙️ Middleware
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # 🚀 PERFEITO! Está no lugar certo
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,29 +84,9 @@ USE_TZ = True
 
 # 📁 Arquivos estáticos
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static', 'images', 'js',  # Aponta para a pasta 'static' na raiz do projeto
-]
+STATICFILES_DIRS = [BASE_DIR / 'apps' / 'website' / 'static' / 'images']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 📌 NOVO: Configuração WhiteNoise para compressão e caching
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # 🔑 Chave primária padrão
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ... (após STATIC_ROOT) ...
-
-
-# --- CONFIGURAÇÃO DE ARQUIVOS DE MÍDIA (Uploads do Usuário) ---
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# 📌 Configuração WhiteNoise...
