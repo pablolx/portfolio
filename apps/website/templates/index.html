@@ -4,48 +4,51 @@
 
 {% block title %}Pablo C. Pinheiro{% endblock %}
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'style.css' %}">
-<div class="portfolio-container">
-    <ul class="nav-tabs" id="portfolioTabs" role="tablist">
-        <li class="nav-item">
-            <button class="nav-link active" data-tab-target="#sobre" type="button">Sobre</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-tab-target="#projetos" type="button">Projetos</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-tab-target="#contato" type="button">Contato</button>
-        </li>
-    </ul>
+{% block content %} <link rel="stylesheet" href="{% static 'style.css' %}"> <div class="portfolio-container"> <ul class="nav-tabs" id="portfolioTabs" role="tablist"> <li class="nav-item"> <button class="nav-link active" data-tab-target="#sobre" type="button">Sobre</button> </li> <li class="nav-item"> <button class="nav-link" data-tab-target="#projetos" type="button">Projetos</button> </li> <li class="nav-item"> <button class="nav-link" data-tab-target="#contato" type="button">Contato</button> </li> </ul>
 
-    <div class="tab-content">
-        <div class="tab-pane active" id="sobre" role="tabpanel">
-            <p>Sou desenvolvedor Python especializado em aplicações web com Django e Flask. Apaixonado por código limpo, APIs REST e automações.</p>
-        </div>
+<div class="tab-content">
+    <div class="tab-pane active" id="sobre" role="tabpanel">
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        <img src="{% static 'images/profile.png' %}" alt="Foto de Pablo C. Pinheiro"  class="profile-photo">
+                    </td>
 
-        <div class="tab-pane" id="projetos" role="tabpanel">
-            {% include "projetos.html" %}
-        </div>
+                    <td style="padding-left: 20px; font-size: 18px;">
+                        <p>Sou desenvolvedor Python especializado em aplicações Django, Web-Scrapping e Pandas.</p>
+                        <p>Apaixonado por código limpo, APIs REST e automações.</p>
+                    </td>
+                </tr>
+            </table>
 
-        <div class="tab-pane" id="contato" role="tabpanel">
-            <form class="contact-form">
-                <div class="form-group">
-                    <label for="nome" class="form-label">Nome</label>
-                    <input type="text" class="form-input" id="nome">
-                </div>
-                <div class="form-group">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-input" id="email">
-                </div>
-                <div class="form-group">
-                    <label for="mensagem" class="form-label">Mensagem</label>
-                    <textarea class="form-input" id="mensagem" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn primary-btn">Enviar</button>
-            </form>
+            <div>
         </div>
     </div>
+
+    <div class="tab-pane" id="projetos" role="tabpanel">
+        {% include "projetos.html" %}
+    </div>
+
+    <div class="tab-pane" id="contato" role="tabpanel">
+        <form class="contact-form">
+            <div class="form-group">
+                <label for="nome" class="form-label">Nome</label>
+                <input type="text" class="form-input" id="nome">
+            </div>
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-input" id="email">
+            </div>
+            <div class="form-group">
+                <label for="mensagem" class="form-label">Mensagem</label>
+                <textarea class="form-input" id="mensagem" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn primary-btn">Enviar</button>
+        </form>
+    </div>
+</div>
+
 </div>
 
 <script src="{% static 'js/tabs.js' %}"></script>
